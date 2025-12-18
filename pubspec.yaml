@@ -40,3 +40,6 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  # Para usar uma logo personalizada, coloque o arquivo em assets/images/ e descomente abaixo:
+  # assets:
+  #   - assets/images/my_logo.png

@@ -6,6 +6,8 @@ import 'core/theme/app_theme.dart';
 import 'providers/transaction_provider.dart';
 import 'providers/credit_card_provider.dart';
 import 'routes/app_routes.dart';
+import 'presentation/screens/splash_screen.dart';
+import 'presentation/widgets/app_logo.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,8 +24,24 @@ void main() async {
   runApp(const MyFinancesApp());
 }
 
-class MyFinancesApp extends StatelessWidget {
+class MyFinancesApp extends StatefulWidget {
   const MyFinancesApp({super.key});
+
+  @override
+  State<MyFinancesApp> createState() => _MyFinancesAppState();
+}
+
+class _MyFinancesAppState extends State<MyFinancesApp> {
+  bool _showSplash = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // Exibir splash por 1200ms
+    Future.delayed(const Duration(milliseconds: 1200), () {
+      if (mounted) setState(() => _showSplash = false);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +57,13 @@ class MyFinancesApp extends StatelessWidget {
         darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.light,
         routerConfig: router,
+        builder: (context, child) {
+          // Enquanto estiver mostrando a splash, exibimos o widget de splash
+          if (_showSplash) {
+            return const SplashScreen();
+          }
+          return child!;
+        },
       ),
     );
   }

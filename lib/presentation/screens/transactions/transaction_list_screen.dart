@@ -213,7 +213,21 @@ class _TransactionListScreenState extends State<TransactionListScreen>
             ...monthTransactions.map(
               (transaction) => Padding(
                 padding: const EdgeInsets.only(bottom: 8),
-                child: _buildTransactionCard(transaction),
+                child: TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0, end: 1),
+                  duration: const Duration(milliseconds: 450),
+                  curve: Curves.easeOut,
+                  builder: (context, v, child) {
+                    return Opacity(
+                      opacity: v,
+                      child: Transform.translate(
+                        offset: Offset(0, (1 - v) * 6),
+                        child: child,
+                      ),
+                    );
+                  },
+                  child: _buildTransactionCard(transaction),
+                ),
               ),
             ),
             const SizedBox(height: 8),
