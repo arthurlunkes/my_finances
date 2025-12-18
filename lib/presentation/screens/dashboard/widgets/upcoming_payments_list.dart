@@ -46,7 +46,10 @@ class UpcomingPaymentsList extends StatelessWidget {
       itemCount: transactions.length > 5 ? 5 : transactions.length,
       itemBuilder: (context, index) {
         final transaction = transactions[index];
-        return _buildPaymentItem(context, transaction);
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          child: _buildPaymentItem(context, transaction),
+        );
       },
     );
   }
@@ -58,7 +61,9 @@ class UpcomingPaymentsList extends StatelessWidget {
         : _getColorByType(transaction.type);
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: EdgeInsets.zero,
+      elevation: 1,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListTile(
         leading: Container(
           padding: const EdgeInsets.all(8),
@@ -92,10 +97,11 @@ class UpcomingPaymentsList extends StatelessWidget {
             ),
             if (isOverdue)
               Container(
+                margin: const EdgeInsets.only(top: 6),
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
                   color: AppColors.overdue,
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(6),
                 ),
                 child: const Text(
                   'ATRASADO',

@@ -9,6 +9,7 @@ import 'widgets/balance_card.dart';
 import 'widgets/summary_cards.dart';
 import 'widgets/upcoming_payments_list.dart';
 import 'widgets/bible_verse_card.dart';
+import '../../widgets/app_logo.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -36,7 +37,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(AppStrings.dashboard),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const AppLogo(size: 36),
+            const SizedBox(width: 10),
+            Text(
+              AppStrings.dashboard,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
         actions: [
           IconButton(
             icon: Icon(_hideValues ? Icons.visibility_off : Icons.visibility),

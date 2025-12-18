@@ -7,6 +7,7 @@ import '../../../core/utils/date_formatter.dart';
 import '../../../data/models/transaction.dart';
 import '../../../providers/transaction_provider.dart';
 import 'package:go_router/go_router.dart';
+import '../../widgets/app_logo.dart';
 
 class TransactionListScreen extends StatefulWidget {
   const TransactionListScreen({super.key});
@@ -39,7 +40,14 @@ class _TransactionListScreenState extends State<TransactionListScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(AppStrings.transactions),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: const [
+            AppLogo(size: 32),
+            SizedBox(width: 10),
+            Text(AppStrings.transactions),
+          ],
+        ),
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: Colors.white,
@@ -161,8 +169,14 @@ class _TransactionListScreenState extends State<TransactionListScreen>
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
+            Container(
+              width: double.infinity,
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardTheme.color?.withOpacity(0.9),
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -195,9 +209,14 @@ class _TransactionListScreenState extends State<TransactionListScreen>
                 ],
               ),
             ),
+            const SizedBox(height: 8),
             ...monthTransactions.map(
-              (transaction) => _buildTransactionCard(transaction),
+              (transaction) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: _buildTransactionCard(transaction),
+              ),
             ),
+            const SizedBox(height: 8),
           ],
         );
       },
