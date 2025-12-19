@@ -152,7 +152,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
         },
         child: const Icon(Icons.add),
       ),
-      bottomNavigationBar: _buildBottomNav(context),
     );
   }
 
@@ -165,37 +164,5 @@ class _DashboardScreenState extends State<DashboardScreen> {
     } else {
       return 'Boa noite!';
     }
-  }
-
-  Widget _buildBottomNav(BuildContext context) {
-    return BottomNavigationBar(
-      currentIndex: 0,
-      type: BottomNavigationBarType.fixed,
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Início'),
-        BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Transações'),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.calendar_today),
-          label: 'Calendário',
-        ),
-        BottomNavigationBarItem(icon: Icon(Icons.church), label: 'Dízimos'),
-      ],
-      onTap: (index) {
-        switch (index) {
-          case 0:
-            // Já está no Dashboard
-            break;
-          case 1:
-            context.push('/transactions');
-            break;
-          case 2:
-            context.push('/calendar');
-            break;
-          case 3:
-            context.push('/tithe');
-            break;
-        }
-      },
-    );
   }
 }

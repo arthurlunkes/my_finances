@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../presentation/screens/dashboard/dashboard_screen.dart';
 import '../presentation/screens/transactions/transaction_list_screen.dart';
@@ -17,19 +18,87 @@ class AppRoutes {
   static const settings = '/settings';
 }
 
+int _locationToTabIndex(String location) {
+  if (location == AppRoutes.transactions) return 1;
+  if (location == AppRoutes.calendar) return 2;
+  if (location == AppRoutes.tithe) return 3;
+  return 0;
+}
+
 final GoRouter router = GoRouter(
   initialLocation: AppRoutes.dashboard,
   routes: [
-    GoRoute(
-      path: AppRoutes.dashboard,
-      name: 'dashboard',
-      builder: (context, state) => const DashboardScreen(),
+    ShellRoute(
+      builder: (BuildContext context, GoRouterState state, Widget child) {
+        final currentIndex = _locationToTabIndex(state.uri.path);
+
+        return Scaffold(
+          body: child,
+          bottomNavigationBar: BottomNavigationBar(
+            currentIndex: currentIndex,
+            type: BottomNavigationBarType.fixed,
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.dashboard),
+                label: 'Início',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.list),
+                label: 'Transações',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.calendar_today),
+                label: 'Calendário',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.church),
+                label: 'Dízimos',
+              ),
+            ],
+            onTap: (index) {
+              switch (index) {
+                case 0:
+                  context.go(AppRoutes.dashboard);
+                  break;
+                case 1:
+                  context.go(AppRoutes.transactions);
+                  break;
+                case 2:
+                  context.go(AppRoutes.calendar);
+                  break;
+                case 3:
+                  context.go(AppRoutes.tithe);
+                  break;
+              }
+            },
+          ),
+        );
+      },
+      routes: [
+        GoRoute(
+          path: AppRoutes.dashboard,
+          name: 'dashboard',
+          builder: (context, state) => const DashboardScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.transactions,
+          name: 'transactions',
+          builder: (context, state) => const TransactionListScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.calendar,
+          name: 'calendar',
+          builder: (context, state) => const CalendarScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.tithe,
+          name: 'tithe',
+          builder: (context, state) => const TitheScreen(),
+        ),
+      ],
     ),
-    GoRoute(
-      path: AppRoutes.transactions,
-      name: 'transactions',
-      builder: (context, state) => const TransactionListScreen(),
-    ),
+
+    // Routes that should appear above the shell (full screen)
     GoRoute(
       path: AppRoutes.addTransaction,
       name: 'addTransaction',
@@ -52,16 +121,6 @@ final GoRouter router = GoRouter(
         final transactionId = state.pathParameters['id']!;
         return AddTransactionScreen(transactionId: transactionId);
       },
-    ),
-    GoRoute(
-      path: AppRoutes.calendar,
-      name: 'calendar',
-      builder: (context, state) => const CalendarScreen(),
-    ),
-    GoRoute(
-      path: AppRoutes.tithe,
-      name: 'tithe',
-      builder: (context, state) => const TitheScreen(),
     ),
   ],
 );
