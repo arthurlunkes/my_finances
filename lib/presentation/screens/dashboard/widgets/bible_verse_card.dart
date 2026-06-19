@@ -9,63 +9,64 @@ class BibleVerseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 0,
-      color: AppColors.tithe.withOpacity(0.1),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: AppColors.tithe.withOpacity(0.3)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: AppColors.tithe.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(
-                    Icons.auto_stories,
-                    color: AppColors.tithe,
-                    size: 20,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  'Versículo do Dia',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: AppColors.tithe,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Text(
-              '"${verse.text}"',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                fontStyle: FontStyle.italic,
-                height: 1.5,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Align(
-              alignment: Alignment.centerRight,
-              child: Text(
-                '- ${verse.reference}',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.tithe,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppColors.tithe.withOpacity(0.12),
+            AppColors.tithe.withOpacity(0.04),
           ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.tithe.withOpacity(0.25)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColors.tithe.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(Icons.auto_stories, color: AppColors.tithe, size: 18),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                'Versículo do Dia',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: AppColors.tithe,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Text(
+            '"${verse.text}"',
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              fontStyle: FontStyle.italic,
+              height: 1.6,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              '— ${verse.reference}',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.tithe,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

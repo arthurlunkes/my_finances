@@ -63,12 +63,13 @@ class AppLogo extends StatelessWidget {
       children: [
         circle,
         if (showText) ...[
-          const SizedBox(width: 8),
+          const SizedBox(width: 12),
           Text(
             'My Finances',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              color: AppColors.textPrimary,
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              color: Colors.white,
               fontWeight: FontWeight.w700,
+              letterSpacing: 0.5,
             ),
           ),
         ],

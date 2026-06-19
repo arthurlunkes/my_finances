@@ -34,28 +34,9 @@ final GoRouter router = GoRouter(
 
         return Scaffold(
           body: child,
-          bottomNavigationBar: BottomNavigationBar(
-            currentIndex: currentIndex,
-            type: BottomNavigationBarType.fixed,
-            items: const [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.dashboard),
-                label: 'Início',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.list),
-                label: 'Transações',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.calendar_today),
-                label: 'Calendário',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.church),
-                label: 'Dízimos',
-              ),
-            ],
-            onTap: (index) {
+          bottomNavigationBar: NavigationBar(
+            selectedIndex: currentIndex,
+            onDestinationSelected: (index) {
               switch (index) {
                 case 0:
                   context.go(AppRoutes.dashboard);
@@ -71,6 +52,28 @@ final GoRouter router = GoRouter(
                   break;
               }
             },
+            destinations: const [
+              NavigationDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home_rounded),
+                label: 'Início',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.receipt_long_outlined),
+                selectedIcon: Icon(Icons.receipt_long_rounded),
+                label: 'Transações',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.calendar_month_outlined),
+                selectedIcon: Icon(Icons.calendar_month_rounded),
+                label: 'Calendário',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.volunteer_activism_outlined),
+                selectedIcon: Icon(Icons.volunteer_activism),
+                label: 'Dízimos',
+              ),
+            ],
           ),
         );
       },

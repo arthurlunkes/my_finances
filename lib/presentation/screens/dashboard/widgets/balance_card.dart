@@ -35,16 +35,16 @@ class BalanceCard extends StatelessWidget {
         width: double.infinity,
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            colors: [AppColors.primary, AppColors.primaryDark],
+            colors: [Color(0xFF388E3C), Color(0xFF1B5E20)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primary.withOpacity(0.3),
-              blurRadius: 10,
-              offset: const Offset(0, 5),
+              color: AppColors.primary.withOpacity(0.35),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
             ),
           ],
         ),

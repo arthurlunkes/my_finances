@@ -172,10 +172,11 @@ class _TransactionListScreenState extends State<TransactionListScreen>
             Container(
               width: double.infinity,
               margin: const EdgeInsets.symmetric(vertical: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: Theme.of(context).cardTheme.color?.withOpacity(0.9),
+                color: AppColors.primary.withOpacity(0.06),
                 borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.primary.withOpacity(0.12)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -320,43 +321,49 @@ class _TransactionListScreenState extends State<TransactionListScreen>
   void _showTransactionOptions(Transaction transaction) {
     showModalBottomSheet(
       context: context,
-      builder: (context) => Container(
-        padding: const EdgeInsets.symmetric(vertical: 20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (transaction.isPending)
-              ListTile(
-                leading: const Icon(
-                  Icons.check_circle,
-                  color: AppColors.success,
-                ),
-                title: const Text('Marcar como Pago'),
-                onTap: () {
-                  context.read<TransactionProvider>().markAsPaid(
-                    transaction.id,
-                  );
-                  Navigator.pop(context);
-                },
-              ),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: 12),
+          Container(
+            width: 36,
+            height: 4,
+            decoration: BoxDecoration(
+              color: AppColors.divider,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(height: 8),
+          if (transaction.isPending)
             ListTile(
-              leading: const Icon(Icons.edit, color: AppColors.primary),
-              title: const Text('Editar'),
+              leading: const Icon(Icons.check_circle_rounded, color: AppColors.success),
+              title: const Text('Marcar como Pago'),
               onTap: () {
+                context.read<TransactionProvider>().markAsPaid(transaction.id);
                 Navigator.pop(context);
-                context.push('/edit-transaction/${transaction.id}');
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.delete, color: AppColors.error),
-              title: const Text('Excluir'),
-              onTap: () {
-                Navigator.pop(context);
-                _confirmDelete(transaction);
-              },
-            ),
-          ],
-        ),
+          ListTile(
+            leading: const Icon(Icons.edit_rounded, color: AppColors.primary),
+            title: const Text('Editar'),
+            onTap: () {
+              Navigator.pop(context);
+              context.push('/edit-transaction/${transaction.id}');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.delete_rounded, color: AppColors.error),
+            title: const Text('Excluir'),
+            onTap: () {
+              Navigator.pop(context);
+              _confirmDelete(transaction);
+            },
+          ),
+          const SizedBox(height: 8),
+        ],
       ),
     );
   }

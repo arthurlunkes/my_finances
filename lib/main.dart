@@ -7,7 +7,6 @@ import 'providers/transaction_provider.dart';
 import 'providers/credit_card_provider.dart';
 import 'routes/app_routes.dart';
 import 'presentation/screens/splash_screen.dart';
-import 'presentation/widgets/app_logo.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

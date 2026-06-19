@@ -37,35 +37,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const AppLogo(size: 36),
-            const SizedBox(width: 10),
-            Text(
-              AppStrings.dashboard,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ],
-        ),
+        title: const AppLogo(size: 32),
         actions: [
           IconButton(
-            icon: Icon(_hideValues ? Icons.visibility_off : Icons.visibility),
+            icon: Icon(
+              _hideValues ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+            ),
             onPressed: () {
               setState(() {
                 _hideValues = !_hideValues;
               });
             },
           ),
-          IconButton(
-            icon: const Icon(Icons.notifications_outlined),
-            onPressed: () {
-              // TODO: Navigate to notifications
-            },
-          ),
+          const SizedBox(width: 4),
         ],
       ),
       body: RefreshIndicator(
@@ -82,17 +66,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Saudação
-                  Text(
-                    _getGreeting(),
-                    style: Theme.of(context).textTheme.headlineMedium,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _getGreeting(),
+                            style: Theme.of(context).textTheme.headlineMedium,
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            DateFormatter.toMonthYear(DateTime.now()),
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    DateFormatter.toMonthYear(DateTime.now()),
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 20),
 
                   // Card de Saldo
                   BalanceCard(

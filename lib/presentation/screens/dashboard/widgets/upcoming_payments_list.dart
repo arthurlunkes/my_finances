@@ -17,25 +17,28 @@ class UpcomingPaymentsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (transactions.isEmpty) {
-      return Card(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            children: [
-              Icon(
-                Icons.check_circle_outline,
-                size: 48,
-                color: AppColors.success.withOpacity(0.5),
+      return Container(
+        padding: const EdgeInsets.all(32),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.divider),
+        ),
+        child: Column(
+          children: [
+            Icon(
+              Icons.check_circle_outline_rounded,
+              size: 48,
+              color: AppColors.success.withOpacity(0.6),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Nenhum pagamento próximo',
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: AppColors.textSecondary,
               ),
-              const SizedBox(height: 16),
-              Text(
-                'Nenhum pagamento próximo',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyLarge?.copyWith(color: AppColors.textSecondary),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       );
     }
@@ -62,8 +65,6 @@ class UpcomingPaymentsList extends StatelessWidget {
 
     return Card(
       margin: EdgeInsets.zero,
-      elevation: 1,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListTile(
         leading: Container(
           padding: const EdgeInsets.all(8),
