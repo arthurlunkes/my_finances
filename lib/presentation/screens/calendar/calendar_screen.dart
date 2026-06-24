@@ -6,6 +6,7 @@ import '../../../core/constants/app_strings.dart';
 import '../../../core/utils/currency_formatter.dart';
 import '../../../core/utils/date_formatter.dart';
 import '../../../data/models/transaction.dart';
+import '../../../data/models/category.dart';
 import '../../../providers/transaction_provider.dart';
 import 'package:go_router/go_router.dart';
 
@@ -17,7 +18,6 @@ class CalendarScreen extends StatefulWidget {
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
-  CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
 
@@ -38,69 +38,157 @@ class _CalendarScreenState extends State<CalendarScreen> {
         builder: (context, provider, child) {
           return Column(
             children: [
-              Card(
-                margin: const EdgeInsets.all(16),
-                child: SizedBox(
-                  height: 360,
-                  child: TableCalendar(
-                    firstDay: DateTime(2020),
-                    lastDay: DateTime(2030),
-                    focusedDay: _focusedDay,
-                    calendarFormat: _calendarFormat,
-                    selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-                    eventLoader: (day) {
-                      return provider.transactions.where((t) {
-                        return isSameDay(t.date, day);
-                      }).toList();
-                    },
-                    onDaySelected: (selectedDay, focusedDay) {
-                      setState(() {
-                        _selectedDay = selectedDay;
-                        _focusedDay = focusedDay;
-                      });
-                    },
-                    onFormatChanged: (format) {
-                      setState(() {
-                        _calendarFormat = format;
-                      });
-                    },
-                    onPageChanged: (focusedDay) {
-                      _focusedDay = focusedDay;
-                    },
-                    calendarStyle: CalendarStyle(
-                      markersMaxCount: 3,
-                      markerDecoration: const BoxDecoration(
-                        color: AppColors.primary,
-                        shape: BoxShape.circle,
-                      ),
-                      todayDecoration: BoxDecoration(
-                        color: AppColors.primary.withOpacity(0.5),
-                        shape: BoxShape.circle,
-                      ),
-                      selectedDecoration: const BoxDecoration(
-                        color: AppColors.primary,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    headerStyle: const HeaderStyle(
-                      formatButtonVisible: true,
-                      titleCentered: true,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
+              _buildCalendarCard(provider),
+              const SizedBox(height: 4),
               Expanded(child: _buildTransactionsList(provider)),
             ],
           );
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          context.push('/add-transaction');
-        },
+        onPressed: () => context.push('/add-transaction'),
         child: const Icon(Icons.add),
       ),
+    );
+  }
+
+  Widget _buildCalendarCard(TransactionProvider provider) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.divider),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: TableCalendar(
+        locale: 'pt_BR',
+        firstDay: DateTime(2020),
+        lastDay: DateTime(2030),
+        focusedDay: _focusedDay,
+        availableGestures: AvailableGestures.horizontalSwipe,
+        startingDayOfWeek: StartingDayOfWeek.sunday,
+        selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+        eventLoader: (day) {
+          return provider.transactions
+              .where((t) => isSameDay(t.date, day))
+              .toList();
+        },
+        onDaySelected: (selectedDay, focusedDay) {
+          setState(() {
+            _selectedDay = selectedDay;
+            _focusedDay = focusedDay;
+          });
+        },
+        onPageChanged: (focusedDay) => _focusedDay = focusedDay,
+        rowHeight: 46,
+        daysOfWeekHeight: 28,
+        calendarStyle: CalendarStyle(
+          isTodayHighlighted: true,
+          outsideDaysVisible: false,
+          cellMargin: const EdgeInsets.all(5),
+          defaultTextStyle: const TextStyle(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w500,
+          ),
+          weekendTextStyle: const TextStyle(
+            color: AppColors.expense,
+            fontWeight: FontWeight.w500,
+          ),
+          todayDecoration: BoxDecoration(
+            color: AppColors.primary.withOpacity(0.12),
+            shape: BoxShape.circle,
+          ),
+          todayTextStyle: const TextStyle(
+            color: AppColors.primary,
+            fontWeight: FontWeight.bold,
+          ),
+          selectedDecoration: const BoxDecoration(
+            color: AppColors.primary,
+            shape: BoxShape.circle,
+          ),
+          selectedTextStyle: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+          markersMaxCount: 0, // usamos marcadores customizados
+        ),
+        daysOfWeekStyle: const DaysOfWeekStyle(
+          weekdayStyle: TextStyle(
+            color: AppColors.textSecondary,
+            fontWeight: FontWeight.w600,
+            fontSize: 12,
+          ),
+          weekendStyle: TextStyle(
+            color: AppColors.expense,
+            fontWeight: FontWeight.w600,
+            fontSize: 12,
+          ),
+        ),
+        headerStyle: HeaderStyle(
+          formatButtonVisible: false,
+          titleCentered: true,
+          headerPadding: const EdgeInsets.symmetric(vertical: 12),
+          titleTextStyle: const TextStyle(
+            fontSize: 17,
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
+          ),
+          titleTextFormatter: (date, locale) {
+            final text = DateFormatter.toMonthYear(date);
+            return text[0].toUpperCase() + text.substring(1);
+          },
+          leftChevronIcon: _chevron(Icons.chevron_left_rounded),
+          rightChevronIcon: _chevron(Icons.chevron_right_rounded),
+          leftChevronMargin: const EdgeInsets.only(left: 8),
+          rightChevronMargin: const EdgeInsets.only(right: 8),
+        ),
+        calendarBuilders: CalendarBuilders(
+          markerBuilder: (context, day, events) {
+            if (events.isEmpty) return const SizedBox.shrink();
+            final txs = events.cast<Transaction>();
+            final hasIncome = txs.any((t) => t.isIncome);
+            final hasExpense = txs.any((t) => t.isExpense);
+            return Positioned(
+              bottom: 4,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (hasIncome) _dot(AppColors.income),
+                  if (hasIncome && hasExpense) const SizedBox(width: 3),
+                  if (hasExpense) _dot(AppColors.expense),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _chevron(IconData icon) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.primary.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      padding: const EdgeInsets.all(4),
+      child: Icon(icon, color: AppColors.primary, size: 22),
+    );
+  }
+
+  Widget _dot(Color color) {
+    return Container(
+      width: 6,
+      height: 6,
+      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
     );
   }
 
@@ -109,109 +197,136 @@ class _CalendarScreenState extends State<CalendarScreen> {
       return const Center(child: Text('Selecione uma data'));
     }
 
-    final dayTransactions = provider.transactions.where((t) {
-      return isSameDay(t.date, _selectedDay);
-    }).toList();
-
-    if (dayTransactions.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.event_busy,
-              size: 64,
-              color: AppColors.textSecondary.withOpacity(0.5),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Nenhuma transação neste dia',
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
-            ),
-          ],
-        ),
-      );
-    }
+    final dayTransactions = provider.transactions
+        .where((t) => isSameDay(t.date, _selectedDay))
+        .toList();
 
     final totalIncome = dayTransactions
         .where((t) => t.isIncome)
         .fold(0.0, (sum, t) => sum + t.amount);
     final totalExpense = dayTransactions
-        .where((t) => t.isExpense || t.isTithe || t.isOffering)
+        .where((t) => t.isExpense)
         .fold(0.0, (sum, t) => sum + t.amount);
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          padding: const EdgeInsets.all(16),
-          color: AppColors.background,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    DateFormatter.toDayMonthYear(_selectedDay!),
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    '${dayTransactions.length} transações',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    CurrencyFormatter.format(totalIncome),
-                    style: const TextStyle(
-                      color: AppColors.income,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    CurrencyFormatter.format(totalExpense),
-                    style: const TextStyle(
-                      color: AppColors.expense,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const Divider(),
-                  Text(
-                    CurrencyFormatter.format(totalIncome - totalExpense),
-                    style: TextStyle(
-                      color: totalIncome >= totalExpense
-                          ? AppColors.income
-                          : AppColors.expense,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
+        _buildDayHeader(dayTransactions.length, totalIncome, totalExpense),
         Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: dayTransactions.length,
-            itemBuilder: (context, index) {
-              final transaction = dayTransactions[index];
-              return _buildTransactionCard(transaction);
-            },
-          ),
+          child: dayTransactions.isEmpty
+              ? _buildEmptyDay()
+              : ListView.builder(
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 90),
+                  itemCount: dayTransactions.length,
+                  itemBuilder: (context, index) =>
+                      _buildTransactionCard(dayTransactions[index]),
+                ),
         ),
       ],
     );
   }
 
+  Widget _buildDayHeader(int count, double income, double expense) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: AppColors.primary.withOpacity(0.06),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.primary.withOpacity(0.12)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.event_note_rounded,
+              color: AppColors.primary,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  DateFormatter.toDayMonthYear(_selectedDay!),
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                Text(
+                  count == 1 ? '1 transação' : '$count transações',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              if (income > 0)
+                _miniAmount(
+                  Icons.arrow_downward_rounded,
+                  income,
+                  AppColors.income,
+                ),
+              if (expense > 0)
+                _miniAmount(
+                  Icons.arrow_upward_rounded,
+                  expense,
+                  AppColors.expense,
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _miniAmount(IconData icon, double value, Color color) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 1),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: color),
+          const SizedBox(width: 2),
+          Text(
+            CurrencyFormatter.format(value),
+            style: TextStyle(color: color, fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyDay() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.event_available_rounded,
+            size: 56,
+            color: AppColors.textSecondary.withOpacity(0.4),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Nenhuma transação neste dia',
+            style: TextStyle(color: AppColors.textSecondary, fontSize: 15),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildTransactionCard(Transaction transaction) {
-    final color = _getColorByType(transaction.type);
+    final color = transaction.isIncome ? AppColors.income : AppColors.expense;
+    final categoryName =
+        DefaultCategories.byId(transaction.category)?.name ?? 'Outros';
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
@@ -220,51 +335,32 @@ class _CalendarScreenState extends State<CalendarScreen> {
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
             color: color.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(_getIconByType(transaction.type), color: color, size: 24),
+          child: Icon(
+            CategoryIcons.byId(
+              transaction.category,
+              isIncome: transaction.isIncome,
+            ),
+            color: color,
+            size: 24,
+          ),
         ),
         title: Text(transaction.description),
-        subtitle: Text(_getStatusText(transaction.status)),
+        subtitle: Text('$categoryName • ${_getStatusText(transaction.status)}'),
         trailing: Text(
-          CurrencyFormatter.format(transaction.amount),
+          CurrencyFormatter.formatWithSign(
+            transaction.isIncome ? transaction.amount : -transaction.amount,
+          ),
           style: TextStyle(
             color: color,
             fontWeight: FontWeight.bold,
-            fontSize: 16,
+            fontSize: 15,
           ),
         ),
-        onTap: () {
-          context.push('/edit-transaction/${transaction.id}');
-        },
+        onTap: () => context.push('/edit-transaction/${transaction.id}'),
       ),
     );
-  }
-
-  Color _getColorByType(TransactionType type) {
-    switch (type) {
-      case TransactionType.income:
-        return AppColors.income;
-      case TransactionType.expense:
-        return AppColors.expense;
-      case TransactionType.tithe:
-        return AppColors.tithe;
-      case TransactionType.offering:
-        return AppColors.offering;
-    }
-  }
-
-  IconData _getIconByType(TransactionType type) {
-    switch (type) {
-      case TransactionType.income:
-        return Icons.arrow_downward;
-      case TransactionType.expense:
-        return Icons.arrow_upward;
-      case TransactionType.tithe:
-        return Icons.church;
-      case TransactionType.offering:
-        return Icons.volunteer_activism;
-    }
   }
 
   String _getStatusText(TransactionStatus status) {

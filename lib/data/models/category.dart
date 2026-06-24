@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class Category {
   final String id;
   final String name;
@@ -5,6 +7,12 @@ class Category {
   final String color;
   final bool isIncome;
   final bool isDefault;
+
+  /// Ícone Material padronizado da categoria (substitui o emoji).
+  IconData get materialIcon => CategoryIcons.byId(id, isIncome: isIncome);
+
+  /// Cor da categoria como [Color].
+  Color get colorValue => Color(int.parse('FF$color', radix: 16));
 
   Category({
     required this.id,
@@ -116,20 +124,6 @@ class DefaultCategories {
       isDefault: true,
     ),
     Category(
-      id: 'cat_tithe',
-      name: 'Dízimo',
-      icon: '⛪',
-      color: 'FFB300',
-      isDefault: true,
-    ),
-    Category(
-      id: 'cat_offering',
-      name: 'Oferta',
-      icon: '🙏',
-      color: 'FF6F00',
-      isDefault: true,
-    ),
-    Category(
       id: 'cat_other',
       name: 'Outros',
       icon: '📦',
@@ -182,4 +176,40 @@ class DefaultCategories {
   ];
 
   static List<Category> get all => [...expenseCategories, ...incomeCategories];
+
+  /// Busca uma categoria pelo seu id (retorna null se não encontrar).
+  static Category? byId(String id) {
+    for (final c in all) {
+      if (c.id == id) return c;
+    }
+    return null;
+  }
+}
+
+/// Mapa de ícones Material padronizados para cada categoria.
+/// Substitui os antigos emojis para manter visual consistente no app.
+class CategoryIcons {
+  static const Map<String, IconData> _byId = {
+    // Despesas
+    'cat_housing': Icons.home_rounded,
+    'cat_transport': Icons.directions_car_rounded,
+    'cat_food': Icons.restaurant_rounded,
+    'cat_health': Icons.favorite_rounded,
+    'cat_education': Icons.school_rounded,
+    'cat_entertainment': Icons.sports_esports_rounded,
+    'cat_shopping': Icons.shopping_bag_rounded,
+    'cat_bills': Icons.receipt_long_rounded,
+    'cat_other': Icons.category_rounded,
+    // Receitas
+    'cat_salary': Icons.payments_rounded,
+    'cat_extra': Icons.savings_rounded,
+    'cat_investment': Icons.trending_up_rounded,
+    'cat_bonus': Icons.card_giftcard_rounded,
+    'cat_other_income': Icons.account_balance_wallet_rounded,
+  };
+
+  static IconData byId(String id, {bool isIncome = false}) {
+    return _byId[id] ??
+        (isIncome ? Icons.attach_money_rounded : Icons.receipt_long_rounded);
+  }
 }

@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_strings.dart';
-import '../../../core/constants/bible_verses.dart';
 import '../../../core/utils/date_formatter.dart';
 import '../../../providers/transaction_provider.dart';
 import 'widgets/balance_card.dart';
 import 'widgets/summary_cards.dart';
 import 'widgets/upcoming_payments_list.dart';
-import 'widgets/bible_verse_card.dart';
 import '../../widgets/app_logo.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -101,14 +99,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   SummaryCards(
                     totalIncome: provider.totalIncome,
                     totalExpense: provider.totalExpense,
-                    totalTithe: provider.totalTithe,
-                    totalOffering: provider.totalOffering,
                     hideValues: _hideValues,
                   ),
-                  const SizedBox(height: 24),
-
-                  // Versículo do Dia
-                  BibleVerseCard(verse: BibleVerses.getVerseOfTheDay()),
                   const SizedBox(height: 24),
 
                   // Próximos Pagamentos

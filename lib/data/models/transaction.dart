@@ -1,8 +1,6 @@
 enum TransactionType {
   income, // Receita
   expense, // Despesa
-  tithe, // Dízimo
-  offering, // Oferta
 }
 
 enum TransactionStatus {
@@ -136,8 +134,6 @@ class Transaction {
 
   bool get isExpense => type == TransactionType.expense;
   bool get isIncome => type == TransactionType.income;
-  bool get isTithe => type == TransactionType.tithe;
-  bool get isOffering => type == TransactionType.offering;
   bool get isPaid => status == TransactionStatus.paid;
   bool get isPending => status == TransactionStatus.pending;
   bool get isOverdue => status == TransactionStatus.overdue;

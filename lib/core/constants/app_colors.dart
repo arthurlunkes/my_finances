@@ -12,8 +12,6 @@ class AppColors {
   // Categorias de transação
   static const income = Color(0xFF43A047);
   static const expense = Color(0xFFE53935);
-  static const tithe = Color(0xFFFFB300);
-  static const offering = Color(0xFFFF6F00);
   static const creditCard = Color(0xFF5E35B1);
   static const savings = Color(0xFF00897B);
 

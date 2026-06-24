@@ -1,0 +1,10 @@
+🎉 Primeira versão do My Finances!
+
+• Painel inicial com saldo, receitas e despesas do mês
+• Cadastro de receitas e despesas com categoria, status e parcelas
+• Calendário com seus lançamentos do dia e resumo financeiro
+• Próximos pagamentos e alerta de contas atrasadas
+• Modo privacidade para ocultar os valores
+• Passo a passo de boas-vindas para começar rápido
+
+Comece agora a organizar o seu dinheiro de forma simples!

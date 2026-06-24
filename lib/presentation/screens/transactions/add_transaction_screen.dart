@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
-import '../../../core/utils/currency_formatter.dart';
 import '../../../data/models/transaction.dart';
 import '../../../data/models/category.dart';
 import '../../../providers/transaction_provider.dart';
@@ -113,18 +112,12 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 _buildTypeChip(
                   TransactionType.expense,
                   'Despesa',
-                  Icons.arrow_upward,
+                  Icons.arrow_upward_rounded,
                 ),
                 _buildTypeChip(
                   TransactionType.income,
                   'Receita',
-                  Icons.arrow_downward,
-                ),
-                _buildTypeChip(TransactionType.tithe, 'Dízimo', Icons.church),
-                _buildTypeChip(
-                  TransactionType.offering,
-                  'Oferta',
-                  Icons.volunteer_activism,
+                  Icons.arrow_downward_rounded,
                 ),
               ],
             ),
@@ -136,7 +129,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               decoration: const InputDecoration(
                 labelText: 'Descrição *',
                 hintText: 'Ex: Conta de luz',
-                prefixIcon: Icon(Icons.description),
+                prefixIcon: Icon(Icons.description_rounded),
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -153,7 +146,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               decoration: const InputDecoration(
                 labelText: 'Valor *',
                 hintText: '0,00',
-                prefixIcon: Icon(Icons.attach_money),
+                prefixIcon: Icon(Icons.attach_money_rounded),
                 prefixText: 'R\$ ',
               ),
               keyboardType: const TextInputType.numberWithOptions(
@@ -180,18 +173,12 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               value: _selectedCategory,
               decoration: const InputDecoration(
                 labelText: 'Categoria *',
-                prefixIcon: Icon(Icons.category),
+                prefixIcon: Icon(Icons.category_rounded),
               ),
               items: categories.map((category) {
                 return DropdownMenuItem(
                   value: category.id,
-                  child: Row(
-                    children: [
-                      Text(category.icon, style: const TextStyle(fontSize: 20)),
-                      const SizedBox(width: 8),
-                      Text(category.name),
-                    ],
-                  ),
+                  child: Text(category.name),
                 );
               }).toList(),
               onChanged: (value) {
@@ -211,12 +198,12 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
             // Data
             ListTile(
               contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.calendar_today),
+              leading: const Icon(Icons.calendar_today_rounded),
               title: const Text('Data'),
               subtitle: Text(
                 '${_selectedDate.day.toString().padLeft(2, '0')}/${_selectedDate.month.toString().padLeft(2, '0')}/${_selectedDate.year}',
               ),
-              trailing: const Icon(Icons.chevron_right),
+              trailing: const Icon(Icons.chevron_right_rounded),
               onTap: () async {
                 final date = await showDatePicker(
                   context: context,
@@ -238,7 +225,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               value: _selectedStatus,
               decoration: const InputDecoration(
                 labelText: 'Status',
-                prefixIcon: Icon(Icons.check_circle),
+                prefixIcon: Icon(Icons.check_circle_rounded),
               ),
               items: const [
                 DropdownMenuItem(
@@ -279,7 +266,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                         value: _selectedCreditCard,
                         decoration: const InputDecoration(
                           labelText: 'Cartão de Crédito (Opcional)',
-                          prefixIcon: Icon(Icons.credit_card),
+                          prefixIcon: Icon(Icons.credit_card_rounded),
                         ),
                         items: [
                           const DropdownMenuItem(
@@ -312,7 +299,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 decoration: const InputDecoration(
                   labelText: 'Parcelas',
                   hintText: '1',
-                  prefixIcon: Icon(Icons.calendar_view_month),
+                  prefixIcon: Icon(Icons.calendar_view_month_rounded),
                   suffixText: 'x',
                 ),
                 keyboardType: TextInputType.number,
@@ -340,7 +327,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               decoration: const InputDecoration(
                 labelText: 'Observações (Opcional)',
                 hintText: 'Adicione detalhes...',
-                prefixIcon: Icon(Icons.note),
+                prefixIcon: Icon(Icons.note_rounded),
               ),
               maxLines: 3,
             ),
@@ -404,10 +391,6 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         return AppColors.income;
       case TransactionType.expense:
         return AppColors.expense;
-      case TransactionType.tithe:
-        return AppColors.tithe;
-      case TransactionType.offering:
-        return AppColors.offering;
     }
   }
 
@@ -449,10 +432,6 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       } else {
         await provider.addTransaction(transaction);
 
-        // Se for receita, perguntar se deseja criar dízimo
-        if (_selectedType == TransactionType.income && mounted) {
-          _askCreateTithe(transaction);
-        }
       }
 
       if (mounted) {
@@ -484,36 +463,5 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         });
       }
     }
-  }
-
-  void _askCreateTithe(Transaction income) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Criar Dízimo?'),
-        content: Text(
-          'Deseja criar automaticamente o dízimo de ${CurrencyFormatter.format(income.amount * 0.10)} (10% de ${CurrencyFormatter.format(income.amount)})?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Não'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              context.read<TransactionProvider>().createTitheFromIncome(income);
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Dízimo criado com sucesso!'),
-                  backgroundColor: AppColors.success,
-                ),
-              );
-            },
-            child: const Text('Sim, Criar'),
-          ),
-        ],
-      ),
-    );
   }
 }

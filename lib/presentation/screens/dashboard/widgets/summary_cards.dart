@@ -5,69 +5,37 @@ import '../../../../core/utils/currency_formatter.dart';
 class SummaryCards extends StatelessWidget {
   final double totalIncome;
   final double totalExpense;
-  final double totalTithe;
-  final double totalOffering;
   final bool hideValues;
 
   const SummaryCards({
     super.key,
     required this.totalIncome,
     required this.totalExpense,
-    required this.totalTithe,
-    required this.totalOffering,
     this.hideValues = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Row(
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: _buildSummaryCard(
-                context,
-                title: 'Receitas',
-                value: totalIncome,
-                icon: Icons.trending_up,
-                color: AppColors.income,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildSummaryCard(
-                context,
-                title: 'Despesas',
-                value: totalExpense,
-                icon: Icons.trending_down,
-                color: AppColors.expense,
-              ),
-            ),
-          ],
+        Expanded(
+          child: _buildSummaryCard(
+            context,
+            title: 'Receitas',
+            value: totalIncome,
+            icon: Icons.trending_up,
+            color: AppColors.income,
+          ),
         ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: _buildSummaryCard(
-                context,
-                title: 'Dízimos',
-                value: totalTithe,
-                icon: Icons.church,
-                color: AppColors.tithe,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildSummaryCard(
-                context,
-                title: 'Ofertas',
-                value: totalOffering,
-                icon: Icons.volunteer_activism,
-                color: AppColors.offering,
-              ),
-            ),
-          ],
+        const SizedBox(width: 12),
+        Expanded(
+          child: _buildSummaryCard(
+            context,
+            title: 'Despesas',
+            value: totalExpense,
+            icon: Icons.trending_down,
+            color: AppColors.expense,
+          ),
         ),
       ],
     );

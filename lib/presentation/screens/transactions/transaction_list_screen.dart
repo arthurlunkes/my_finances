@@ -5,6 +5,7 @@ import '../../../core/constants/app_strings.dart';
 import '../../../core/utils/currency_formatter.dart';
 import '../../../core/utils/date_formatter.dart';
 import '../../../data/models/transaction.dart';
+import '../../../data/models/category.dart';
 import '../../../providers/transaction_provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../widgets/app_logo.dart';
@@ -24,7 +25,7 @@ class _TransactionListScreenState extends State<TransactionListScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<TransactionProvider>().loadTransactions();
     });
@@ -57,7 +58,6 @@ class _TransactionListScreenState extends State<TransactionListScreen>
             Tab(text: 'Todas'),
             Tab(text: 'Receitas'),
             Tab(text: 'Despesas'),
-            Tab(text: 'Dízimos'),
           ],
         ),
       ),
@@ -95,10 +95,6 @@ class _TransactionListScreenState extends State<TransactionListScreen>
                     _buildTransactionList(provider.transactions),
                     _buildTransactionList(provider.incomes),
                     _buildTransactionList(provider.expenses),
-                    _buildTransactionList([
-                      ...provider.tithes,
-                      ...provider.offerings,
-                    ]),
                   ],
                 );
               },
@@ -161,9 +157,7 @@ class _TransactionListScreenState extends State<TransactionListScreen>
             .where((t) => t.isIncome && t.isPaid)
             .fold(0.0, (sum, t) => sum + t.amount);
         final totalExpense = monthTransactions
-            .where(
-              (t) => (t.isExpense || t.isTithe || t.isOffering) && t.isPaid,
-            )
+            .where((t) => t.isExpense && t.isPaid)
             .fold(0.0, (sum, t) => sum + t.amount);
 
         return Column(
@@ -251,7 +245,14 @@ class _TransactionListScreenState extends State<TransactionListScreen>
             color: color.withOpacity(0.1),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(_getIconByType(transaction.type), color: color, size: 24),
+          child: Icon(
+            CategoryIcons.byId(
+              transaction.category,
+              isIncome: transaction.isIncome,
+            ),
+            color: color,
+            size: 24,
+          ),
         ),
         title: Text(
           transaction.description,
@@ -400,23 +401,6 @@ class _TransactionListScreenState extends State<TransactionListScreen>
         return AppColors.income;
       case TransactionType.expense:
         return AppColors.expense;
-      case TransactionType.tithe:
-        return AppColors.tithe;
-      case TransactionType.offering:
-        return AppColors.offering;
-    }
-  }
-
-  IconData _getIconByType(TransactionType type) {
-    switch (type) {
-      case TransactionType.income:
-        return Icons.arrow_downward;
-      case TransactionType.expense:
-        return Icons.arrow_upward;
-      case TransactionType.tithe:
-        return Icons.church;
-      case TransactionType.offering:
-        return Icons.volunteer_activism;
     }
   }
 

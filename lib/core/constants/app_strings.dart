@@ -1,15 +1,13 @@
 class AppStrings {
   // App
-  static const appName = 'My Finances';
-  static const appSubtitle = 'Gerenciador Financeiro Cristão';
+  static const appName = 'MiResta';
+  static const appSubtitle = 'Gerenciador Financeiro';
 
   // Dashboard
   static const dashboard = 'Dashboard';
   static const balance = 'Saldo';
   static const income = 'Receitas';
   static const expenses = 'Despesas';
-  static const tithe = 'Dízimo';
-  static const offering = 'Oferta';
   static const monthSummary = 'Resumo do Mês';
   static const upcomingPayments = 'Próximos Pagamentos';
   static const savingsGoal = 'Meta de Economia';
@@ -38,14 +36,6 @@ class AppStrings {
   static const nextInvoice = 'Próxima Fatura';
   static const dueDate = 'Vencimento';
   static const installments = 'Parcelamento';
-
-  // Christian Section
-  static const christianFinance = 'Finanças Cristãs';
-  static const titheHistory = 'Histórico de Dízimos';
-  static const offeringHistory = 'Histórico de Ofertas';
-  static const monthlyTithe = 'Dízimo Mensal';
-  static const generosityGoal = 'Meta de Generosidade';
-  static const totalContributed = 'Total Contribuído';
 
   // Categories
   static const categories = 'Categorias';

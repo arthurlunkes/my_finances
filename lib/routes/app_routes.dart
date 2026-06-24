@@ -4,7 +4,6 @@ import '../presentation/screens/dashboard/dashboard_screen.dart';
 import '../presentation/screens/transactions/transaction_list_screen.dart';
 import '../presentation/screens/transactions/add_transaction_screen.dart';
 import '../presentation/screens/calendar/calendar_screen.dart';
-import '../presentation/screens/christian/tithe_screen.dart';
 import '../data/models/transaction.dart';
 
 class AppRoutes {
@@ -13,7 +12,6 @@ class AppRoutes {
   static const addTransaction = '/add-transaction';
   static const editTransaction = '/edit-transaction';
   static const calendar = '/calendar';
-  static const tithe = '/tithe';
   static const creditCards = '/credit-cards';
   static const settings = '/settings';
 }
@@ -21,7 +19,6 @@ class AppRoutes {
 int _locationToTabIndex(String location) {
   if (location == AppRoutes.transactions) return 1;
   if (location == AppRoutes.calendar) return 2;
-  if (location == AppRoutes.tithe) return 3;
   return 0;
 }
 
@@ -47,9 +44,6 @@ final GoRouter router = GoRouter(
                 case 2:
                   context.go(AppRoutes.calendar);
                   break;
-                case 3:
-                  context.go(AppRoutes.tithe);
-                  break;
               }
             },
             destinations: const [
@@ -67,11 +61,6 @@ final GoRouter router = GoRouter(
                 icon: Icon(Icons.calendar_month_outlined),
                 selectedIcon: Icon(Icons.calendar_month_rounded),
                 label: 'Calendário',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.volunteer_activism_outlined),
-                selectedIcon: Icon(Icons.volunteer_activism),
-                label: 'Dízimos',
               ),
             ],
           ),
@@ -92,11 +81,6 @@ final GoRouter router = GoRouter(
           path: AppRoutes.calendar,
           name: 'calendar',
           builder: (context, state) => const CalendarScreen(),
-        ),
-        GoRoute(
-          path: AppRoutes.tithe,
-          name: 'tithe',
-          builder: (context, state) => const TitheScreen(),
         ),
       ],
     ),

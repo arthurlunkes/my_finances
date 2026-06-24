@@ -3,6 +3,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/currency_formatter.dart';
 import '../../../../core/utils/date_formatter.dart';
 import '../../../../data/models/transaction.dart';
+import '../../../../data/models/category.dart';
 
 class UpcomingPaymentsList extends StatelessWidget {
   final List<Transaction> transactions;
@@ -72,7 +73,14 @@ class UpcomingPaymentsList extends StatelessWidget {
             color: color.withOpacity(0.1),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(_getIconByType(transaction.type), color: color, size: 24),
+          child: Icon(
+            CategoryIcons.byId(
+              transaction.category,
+              isIncome: transaction.isIncome,
+            ),
+            color: color,
+            size: 24,
+          ),
         ),
         title: Text(
           transaction.description,
@@ -126,23 +134,6 @@ class UpcomingPaymentsList extends StatelessWidget {
         return AppColors.income;
       case TransactionType.expense:
         return AppColors.expense;
-      case TransactionType.tithe:
-        return AppColors.tithe;
-      case TransactionType.offering:
-        return AppColors.offering;
-    }
-  }
-
-  IconData _getIconByType(TransactionType type) {
-    switch (type) {
-      case TransactionType.income:
-        return Icons.arrow_downward;
-      case TransactionType.expense:
-        return Icons.arrow_upward;
-      case TransactionType.tithe:
-        return Icons.church;
-      case TransactionType.offering:
-        return Icons.volunteer_activism;
     }
   }
 }

@@ -47,7 +47,7 @@ class AppLogo extends StatelessWidget {
         ),
         alignment: Alignment.center,
         child: Text(
-          'MF',
+          'MR',
           style: TextStyle(
             color: Colors.white,
             fontSize: (circleSize * 0.45).clamp(12, 20),
@@ -65,7 +65,7 @@ class AppLogo extends StatelessWidget {
         if (showText) ...[
           const SizedBox(width: 12),
           Text(
-            'My Finances',
+            'MiResta',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
               color: Colors.white,
               fontWeight: FontWeight.w700,

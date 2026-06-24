@@ -27,12 +27,6 @@ class TransactionProvider with ChangeNotifier {
   List<Transaction> get expenses =>
       _transactions.where((t) => t.isExpense).toList();
 
-  List<Transaction> get tithes =>
-      _transactions.where((t) => t.isTithe).toList();
-
-  List<Transaction> get offerings =>
-      _transactions.where((t) => t.isOffering).toList();
-
   // Valores totais
   double get totalIncome => incomes.fold(0.0, (sum, t) => sum + t.amount);
 
@@ -45,13 +39,8 @@ class TransactionProvider with ChangeNotifier {
   double get totalExpensePaid =>
       expenses.where((t) => t.isPaid).fold(0.0, (sum, t) => sum + t.amount);
 
-  double get totalTithe => tithes.fold(0.0, (sum, t) => sum + t.amount);
-
-  double get totalOffering => offerings.fold(0.0, (sum, t) => sum + t.amount);
-
   // Balance based on paid amounts (realized)
-  double get balance =>
-      totalIncomePaid - totalExpensePaid - totalTithe - totalOffering;
+  double get balance => totalIncomePaid - totalExpensePaid;
 
   // Próximos pagamentos (7 dias)
   List<Transaction> get upcomingPayments {
@@ -195,27 +184,6 @@ class TransactionProvider with ChangeNotifier {
       await _db.insertTransaction(next);
     } catch (e) {
       debugPrint('Erro ao criar próxima recorrência: $e');
-    }
-  }
-
-  // Criar transação de dízimo automaticamente (10% do salário)
-  Future<void> createTitheFromIncome(Transaction income) async {
-    try {
-      final titheAmount = income.amount * 0.10;
-      final tithe = Transaction(
-        id: const Uuid().v4(),
-        description: 'Dízimo - ${income.description}',
-        amount: titheAmount,
-        date: income.date,
-        type: TransactionType.tithe,
-        status: TransactionStatus.pending,
-        category: 'cat_tithe',
-        createdAt: DateTime.now(),
-      );
-      await addTransaction(tithe);
-    } catch (e) {
-      debugPrint('Erro ao criar dízimo: $e');
-      rethrow;
     }
   }
 
