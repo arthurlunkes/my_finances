@@ -64,15 +64,26 @@ class _TransactionListScreenState extends State<TransactionListScreen>
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
             child: TextField(
               decoration: InputDecoration(
                 hintText: 'Pesquisar transações...',
-                prefixIcon: const Icon(Icons.search),
+                prefixIcon: const Icon(Icons.search_rounded),
                 filled: true,
+                fillColor: AppColors.surface,
+                isDense: true,
+                contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide(color: AppColors.divider),
+                ),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(14),
                   borderSide: BorderSide.none,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
                 ),
               ),
               onChanged: (value) {
@@ -123,15 +134,27 @@ class _TransactionListScreenState extends State<TransactionListScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.inbox_outlined,
-              size: 64,
-              color: AppColors.textSecondary.withOpacity(0.5),
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.08),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.receipt_long_rounded,
+                size: 56,
+                color: AppColors.primary.withOpacity(0.7),
+              ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             Text(
-              'Nenhuma transação encontrada',
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
+              'Nenhuma transação por aqui',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Toque em "Nova Transação" para começar',
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
             ),
           ],
         ),
@@ -163,48 +186,61 @@ class _TransactionListScreenState extends State<TransactionListScreen>
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: double.infinity,
-              margin: const EdgeInsets.symmetric(vertical: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.06),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.primary.withOpacity(0.12)),
-              ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(4, 12, 4, 8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(
-                    monthKey,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                  Row(
                     children: [
-                      Text(
-                        CurrencyFormatter.formatWithSign(
-                          totalIncome - totalExpense,
-                        ),
-                        style: TextStyle(
-                          color: totalIncome >= totalExpense
-                              ? AppColors.income
-                              : AppColors.expense,
-                          fontWeight: FontWeight.bold,
+                      Container(
+                        width: 4,
+                        height: 18,
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          borderRadius: BorderRadius.circular(2),
                         ),
                       ),
+                      const SizedBox(width: 8),
                       Text(
-                        '${monthTransactions.length} transações',
+                        monthKey,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '· ${monthTransactions.length}',
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],
                   ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: (totalIncome >= totalExpense
+                              ? AppColors.income
+                              : AppColors.expense)
+                          .withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      CurrencyFormatter.formatWithSign(
+                        totalIncome - totalExpense,
+                      ),
+                      style: TextStyle(
+                        color: totalIncome >= totalExpense
+                            ? AppColors.income
+                            : AppColors.expense,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
-            const SizedBox(height: 8),
             ...monthTransactions.map(
               (transaction) => Padding(
                 padding: const EdgeInsets.only(bottom: 8),
@@ -234,87 +270,119 @@ class _TransactionListScreenState extends State<TransactionListScreen>
 
   Widget _buildTransactionCard(Transaction transaction) {
     final color = _getColorByType(transaction.type);
+    final statusColor = _getStatusColor(transaction.status);
     final isOverdue = transaction.isOverdue;
+    final sign = transaction.isIncome ? '+ ' : '- ';
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: ListTile(
-        leading: Container(
-          padding: const EdgeInsets.all(10),
+    return Material(
+      color: AppColors.surface,
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () => context.push('/edit-transaction/${transaction.id}'),
+        onLongPress: () => _showTransactionOptions(transaction),
+        child: Ink(
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.divider),
           ),
-          child: Icon(
-            CategoryIcons.byId(
-              transaction.category,
-              isIncome: transaction.isIncome,
-            ),
-            color: color,
-            size: 24,
-          ),
-        ),
-        title: Text(
-          transaction.description,
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              DateFormatter.toDayMonthYear(transaction.date),
-              style: TextStyle(
-                color: isOverdue ? AppColors.overdue : AppColors.textSecondary,
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+          child: Row(
+            children: [
+              Container(
+                width: 46,
+                height: 46,
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(13),
+                ),
+                child: Icon(
+                  CategoryIcons.byId(
+                    transaction.category,
+                    isIncome: transaction.isIncome,
+                  ),
+                  color: color,
+                  size: 24,
+                ),
               ),
-            ),
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: _getStatusColor(transaction.status).withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    _getStatusText(transaction.status),
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: _getStatusColor(transaction.status),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      transaction.description,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: statusColor.withOpacity(0.12),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            _getStatusText(transaction.status),
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.3,
+                              color: statusColor,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Text(
+                            DateFormatter.toDayMonthYear(transaction.date),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: isOverdue
+                                  ? AppColors.overdue
+                                  : AppColors.textSecondary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    '$sign${CurrencyFormatter.format(transaction.amount)}',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: color,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                ),
-              ],
-            ),
-          ],
-        ),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(
-              CurrencyFormatter.format(transaction.amount),
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: color,
-                fontWeight: FontWeight.bold,
+                  if (transaction.installments != null) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      '${transaction.currentInstallment}/${transaction.installments}x',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
+                ],
               ),
-            ),
-            if (transaction.installments != null)
-              Text(
-                '${transaction.currentInstallment}/${transaction.installments}x',
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-          ],
+            ],
+          ),
         ),
-        onTap: () {
-          context.push('/edit-transaction/${transaction.id}');
-        },
-        onLongPress: () {
-          _showTransactionOptions(transaction);
-        },
       ),
     );
   }

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 
 class AppLogo extends StatelessWidget {
+  /// Logo padrão do app (mesma imagem usada no ícone do sistema).
+  static const String defaultAsset = 'assets/images/icon.png';
+
   final double size;
   final bool showText;
   final String? assetPath;
@@ -10,7 +13,7 @@ class AppLogo extends StatelessWidget {
     super.key,
     this.size = 36,
     this.showText = false,
-    this.assetPath,
+    this.assetPath = defaultAsset,
   });
 
   @override

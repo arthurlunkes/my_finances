@@ -35,7 +35,7 @@ class BalanceCard extends StatelessWidget {
         width: double.infinity,
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            colors: [Color(0xFF388E3C), Color(0xFF1B5E20)],
+            colors: [AppColors.primary, AppColors.primaryDark],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),

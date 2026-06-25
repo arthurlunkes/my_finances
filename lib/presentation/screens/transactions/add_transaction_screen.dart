@@ -106,18 +106,22 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
+            Row(
               children: [
-                _buildTypeChip(
-                  TransactionType.expense,
-                  'Despesa',
-                  Icons.arrow_upward_rounded,
+                Expanded(
+                  child: _buildTypeChip(
+                    TransactionType.expense,
+                    'Despesa',
+                    Icons.arrow_upward_rounded,
+                  ),
                 ),
-                _buildTypeChip(
-                  TransactionType.income,
-                  'Receita',
-                  Icons.arrow_downward_rounded,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildTypeChip(
+                    TransactionType.income,
+                    'Receita',
+                    Icons.arrow_downward_rounded,
+                  ),
                 ),
               ],
             ),
@@ -361,26 +365,43 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     final isSelected = _selectedType == type;
     final color = _getColorByType(type);
 
-    return FilterChip(
-      selected: isSelected,
-      label: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 18, color: isSelected ? Colors.white : color),
-          const SizedBox(width: 4),
-          Text(label),
-        ],
-      ),
-      onSelected: (selected) {
-        setState(() {
-          _selectedType = type;
-          _selectedCategory = null; // Reset category when type changes
-        });
-      },
-      selectedColor: color,
-      labelStyle: TextStyle(
-        color: isSelected ? Colors.white : color,
-        fontWeight: FontWeight.w600,
+    return Material(
+      color: isSelected ? color : color.withOpacity(0.08),
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: () {
+          setState(() {
+            _selectedType = type;
+            _selectedCategory = null; // Reset category when type changes
+          });
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: isSelected ? color : color.withOpacity(0.25),
+              width: 1.5,
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 20, color: isSelected ? Colors.white : color),
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: TextStyle(
+                  color: isSelected ? Colors.white : color,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

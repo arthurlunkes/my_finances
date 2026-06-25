@@ -3,7 +3,7 @@ import '../widgets/app_logo.dart';
 
 class SplashScreen extends StatefulWidget {
   final String? assetPath;
-  const SplashScreen({super.key, this.assetPath});
+  const SplashScreen({super.key, this.assetPath = AppLogo.defaultAsset});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();

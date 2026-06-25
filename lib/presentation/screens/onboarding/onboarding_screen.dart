@@ -104,11 +104,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: _finish,
-                child: Text(_isLastPage ? '' : 'Pular'),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 8, 8, 0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const AppLogo(size: 32, showText: false),
+                  TextButton(
+                    onPressed: _finish,
+                    child: Text(_isLastPage ? '' : 'Pular'),
+                  ),
+                ],
               ),
             ),
             Expanded(

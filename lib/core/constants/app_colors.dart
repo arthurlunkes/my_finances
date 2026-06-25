@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
 
+/// Fonte única de cores do app.
+///
+/// Para alterar a identidade visual, mude apenas as constantes abaixo.
+/// A cor [primary] é a cor geral/principal do app.
 class AppColors {
-  // Cores principais
-  static const primary = Color(0xFF2E7D32);
-  static const primaryLight = Color(0xFF4CAF50);
-  static const primaryDark = Color(0xFF1B5E20);
-  static const secondary = Color(0xFF1565C0);
-  static const secondaryLight = Color(0xFF5E92F3);
-  static const secondaryDark = Color(0xFF003C8F);
+  // ===========================================================================
+  // COR PRINCIPAL DO APP (azul — remete a confiança/dinheiro)
+  // Altere estes 3 valores para trocar a cor geral do app.
+  // ===========================================================================
+  static const primary = Color(0xFF1565C0);
+  static const primaryLight = Color(0xFF5E92F3);
+  static const primaryDark = Color(0xFF003C8F);
+
+  // Cor secundária / destaque
+  static const secondary = Color(0xFF00897B);
+  static const secondaryLight = Color(0xFF4EBAAA);
+  static const secondaryDark = Color(0xFF005B4F);
 
   // Categorias de transação
   static const income = Color(0xFF43A047);
