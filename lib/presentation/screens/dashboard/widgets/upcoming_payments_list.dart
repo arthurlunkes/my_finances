@@ -30,7 +30,7 @@ class UpcomingPaymentsList extends StatelessWidget {
             Icon(
               Icons.check_circle_outline_rounded,
               size: 48,
-              color: AppColors.success.withOpacity(0.6),
+              color: AppColors.success.withValues(alpha: 0.6),
             ),
             const SizedBox(height: 12),
             Text(
@@ -70,7 +70,7 @@ class UpcomingPaymentsList extends StatelessWidget {
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(

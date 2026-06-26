@@ -107,7 +107,7 @@ class AppTheme {
       navigationBarTheme: NavigationBarThemeData(
         height: 68,
         backgroundColor: AppColors.surface,
-        indicatorColor: AppColors.primary.withOpacity(0.12),
+        indicatorColor: AppColors.primary.withValues(alpha: 0.12),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           final selected = states.contains(WidgetState.selected);
           return GoogleFonts.inter(
@@ -279,7 +279,7 @@ class AppTheme {
       navigationBarTheme: NavigationBarThemeData(
         height: 68,
         backgroundColor: const Color(0xFF1C1C28),
-        indicatorColor: AppColors.primaryLight.withOpacity(0.15),
+        indicatorColor: AppColors.primaryLight.withValues(alpha: 0.15),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           final selected = states.contains(WidgetState.selected);
           return GoogleFonts.inter(

@@ -174,7 +174,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
             // Categoria
             DropdownButtonFormField<String>(
-              value: _selectedCategory,
+              initialValue: _selectedCategory,
               decoration: const InputDecoration(
                 labelText: 'Categoria *',
                 prefixIcon: Icon(Icons.category_rounded),
@@ -226,7 +226,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
             // Status
             DropdownButtonFormField<TransactionStatus>(
-              value: _selectedStatus,
+              initialValue: _selectedStatus,
               decoration: const InputDecoration(
                 labelText: 'Status',
                 prefixIcon: Icon(Icons.check_circle_rounded),
@@ -267,7 +267,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   return Column(
                     children: [
                       DropdownButtonFormField<String>(
-                        value: _selectedCreditCard,
+                        initialValue: _selectedCreditCard,
                         decoration: const InputDecoration(
                           labelText: 'Cartão de Crédito (Opcional)',
                           prefixIcon: Icon(Icons.credit_card_rounded),
@@ -366,7 +366,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     final color = _getColorByType(type);
 
     return Material(
-      color: isSelected ? color : color.withOpacity(0.08),
+      color: isSelected ? color : color.withValues(alpha: 0.08),
       borderRadius: BorderRadius.circular(14),
       child: InkWell(
         borderRadius: BorderRadius.circular(14),
@@ -382,7 +382,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: isSelected ? color : color.withOpacity(0.25),
+              color: isSelected ? color : color.withValues(alpha: 0.25),
               width: 1.5,
             ),
           ),
