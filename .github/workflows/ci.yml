@@ -1,0 +1,41 @@
+name: CI
+
+# Roda em cada push e Pull Request para a branch main.
+# Garante qualidade do código antes de buildar/lançar: formatação, análise estática e testes.
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  quality:
+    name: Análise e testes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.41.1
+          channel: stable
+          cache: true
+
+      - name: Baixar dependências
+        run: flutter pub get
+
+      - name: Checar formatação
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Análise estática
+        run: flutter analyze
+
+      - name: Rodar testes
+        run: |
+          if [ -d test ] && [ -n "$(find test -name '*.dart' -print -quit)" ]; then
+            flutter test
+          else
+            echo "Nenhum teste encontrado em test/ — pulando."
+          fi

@@ -1,0 +1,122 @@
+name: Deploy → Play Store [DESATIVADO]
+
+# ⚠️ DESATIVADO POR ENQUANTO.
+# Os gatilhos automáticos (push de tag) foram removidos: este workflow NÃO roda
+# sozinho e NÃO publica nada na Play (incluindo produção) automaticamente.
+# Só pode ser executado manualmente pela aba Actions ("Run workflow"), e mesmo
+# assim você precisa escolher o canal de propósito.
+# Para reativar o envio automático, descomente o bloco "push:" em "on:" abaixo.
+
+# Build assinado + upload automático na Google Play Store via API.
+#
+# Dispara ao criar uma tag "v*" (ex.: v1.0.1) -> envia para o canal "internal",
+# ou manualmente pela aba Actions escolhendo o canal (track).
+#
+# Este é o ÚNICO workflow que envia para a Play. O versionCode usa
+# (github.run_number + 10) para sempre ser crescente e nunca colidir com os
+# códigos já usados manualmente (1 a 4).
+#
+# ─────────────────────────────────────────────────────────────────────────────
+# SECRETS NECESSÁRIOS (Settings > Secrets and variables > Actions):
+#
+#   Assinatura do app (mesmo do release.yml):
+#     KEYSTORE_BASE64            -> upload-keystore.jks em base64
+#     STORE_PASSWORD             -> senha do keystore
+#     KEY_PASSWORD               -> senha da chave
+#     KEY_ALIAS                  -> alias da chave (ex.: upload)
+#
+#   Acesso à API da Play:
+#     PLAY_SERVICE_ACCOUNT_JSON  -> conteúdo do JSON da conta de serviço do Google Cloud
+#
+# COMO OBTER O PLAY_SERVICE_ACCOUNT_JSON (uma vez só):
+#   1. Play Console > Configurações > Acesso de API.
+#   2. Crie/vincule um projeto do Google Cloud e crie uma "Conta de serviço".
+#   3. No Google Cloud, gere uma chave JSON para essa conta de serviço (baixe o arquivo).
+#   4. De volta ao Play Console, conceda acesso à conta de serviço (permissão de
+#      "Administrar versões" / Release manager para este app).
+#   5. Cole TODO o conteúdo do JSON no secret PLAY_SERVICE_ACCOUNT_JSON.
+#
+# OBS: o primeiríssimo upload de um app novo precisa ser manual pelo Console.
+#      Como você já subiu o 1.0.0+4 no teste interno, isso já está satisfeito.
+# ─────────────────────────────────────────────────────────────────────────────
+on:
+  # DESATIVADO: gatilho automático por tag comentado. Descomente para reativar.
+  # push:
+  #   tags: [ 'v*' ]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'versionName (ex.: 1.0.1)'
+        required: true
+        default: '1.0.0'
+      track:
+        description: 'Canal de publicação'
+        required: true
+        default: 'internal'
+        type: choice
+        options:
+          - internal
+          - alpha
+          - beta
+          - production
+
+jobs:
+  deploy:
+    name: Build e envio para a Play
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.41.1
+          channel: stable
+          cache: true
+
+      - name: Definir versão e canal
+        id: vars
+        run: |
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            echo "name=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+            echo "track=internal" >> "$GITHUB_OUTPUT"
+          else
+            echo "name=${{ github.event.inputs.version }}" >> "$GITHUB_OUTPUT"
+            echo "track=${{ github.event.inputs.track }}" >> "$GITHUB_OUTPUT"
+          fi
+          echo "code=$(( ${{ github.run_number }} + 10 ))" >> "$GITHUB_OUTPUT"
+
+      - name: Restaurar keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "::error::Secret KEYSTORE_BASE64 ausente. Configure os secrets de assinatura."
+            exit 1
+          fi
+          echo "$KEYSTORE_BASE64" | base64 --decode > android/app/upload-keystore.jks
+          cat > android/key.properties <<EOF
+          storePassword=$STORE_PASSWORD
+          keyPassword=$KEY_PASSWORD
+          keyAlias=$KEY_ALIAS
+          storeFile=upload-keystore.jks
+          EOF
+
+      - name: Baixar dependências
+        run: flutter pub get
+
+      - name: Build do App Bundle assinado (.aab)
+        run: flutter build appbundle --release --build-name=${{ steps.vars.outputs.name }} --build-number=${{ steps.vars.outputs.code }}
+
+      - name: Enviar para a Google Play
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.arthurlunkes.myfinances
+          releaseFiles: build/app/outputs/bundle/release/app-release.aab
+          track: ${{ steps.vars.outputs.track }}
+          status: completed

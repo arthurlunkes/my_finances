@@ -1,0 +1,102 @@
+name: Build & Release
+
+# Dispara quando você cria uma tag começando com "v" (ex.: v1.0.1)
+# ou manualmente pela aba Actions (workflow_dispatch).
+#
+# Versionamento automático:
+#   - versionName (o "1.0.1" que o usuário vê): vem da tag, ou do input no disparo manual.
+#   - versionCode (número interno da Play): vem do número da execução (github.run_number),
+#     então é SEMPRE crescente — nunca mais dá o erro "Version code already used".
+#
+# Assinatura (opcional):
+#   - Se você configurar os secrets do keystore (veja abaixo), o .aab/.apk sai assinado
+#     com a chave de release, pronto para a Play Store.
+#   - Sem os secrets, o build ainda funciona, mas assinado com a chave de debug
+#     (serve para testar o APK, NÃO serve para subir na Play).
+#
+# Secrets necessários para build assinado de release (Settings > Secrets and variables > Actions):
+#   KEYSTORE_BASE64   -> conteúdo do upload-keystore.jks em base64
+#   STORE_PASSWORD    -> senha do keystore
+#   KEY_PASSWORD      -> senha da chave
+#   KEY_ALIAS         -> alias da chave (ex.: upload)
+on:
+  push:
+    tags: [ 'v*' ]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'versionName (ex.: 1.0.1)'
+        required: true
+        default: '1.0.0'
+
+jobs:
+  build:
+    name: Build assinado (AAB + APK)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # necessário para criar o GitHub Release e anexar os arquivos
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.41.1
+          channel: stable
+          cache: true
+
+      - name: Definir versionName
+        id: version
+        run: |
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            echo "name=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          else
+            echo "name=${{ github.event.inputs.version }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Restaurar keystore (se houver secrets)
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 --decode > android/app/upload-keystore.jks
+            cat > android/key.properties <<EOF
+          storePassword=$STORE_PASSWORD
+          keyPassword=$KEY_PASSWORD
+          keyAlias=$KEY_ALIAS
+          storeFile=upload-keystore.jks
+          EOF
+            echo "Keystore configurado — build será assinado para release."
+          else
+            echo "Sem KEYSTORE_BASE64 — build sairá assinado com a chave de debug."
+          fi
+
+      - name: Baixar dependências
+        run: flutter pub get
+
+      - name: Build do App Bundle (.aab)
+        run: flutter build appbundle --release --build-name=${{ steps.version.outputs.name }} --build-number=${{ github.run_number }}
+
+      - name: Build do APK (.apk)
+        run: flutter build apk --release --build-name=${{ steps.version.outputs.name }} --build-number=${{ github.run_number }}
+
+      - name: Publicar artefatos na execução
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ steps.version.outputs.name }}-${{ github.run_number }}
+          path: |
+            build/app/outputs/bundle/release/app-release.aab
+            build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Criar GitHub Release (apenas em tags)
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            build/app/outputs/bundle/release/app-release.aab
+            build/app/outputs/flutter-apk/app-release.apk
+          generate_release_notes: true

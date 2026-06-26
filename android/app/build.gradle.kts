@@ -52,7 +52,14 @@ android {
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName("release")
+            // Usa a assinatura de release quando key.properties existe (local/CI com secrets);
+            // caso contrário cai para a chave de debug para que o build de release ainda funcione
+            // no CI sem o keystore (ex.: gerar APK de teste).
+            signingConfig = if (keystorePropertiesFile.exists()) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
         }
     }
 }
