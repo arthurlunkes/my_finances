@@ -83,7 +83,10 @@ class _TransactionListScreenState extends State<TransactionListScreen>
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+                  borderSide: const BorderSide(
+                    color: AppColors.primary,
+                    width: 1.5,
+                  ),
                 ),
               ),
               onChanged: (value) {
@@ -205,9 +208,8 @@ class _TransactionListScreenState extends State<TransactionListScreen>
                       const SizedBox(width: 8),
                       Text(
                         monthKey,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w700),
                       ),
                       const SizedBox(width: 8),
                       Text(
@@ -217,12 +219,16 @@ class _TransactionListScreenState extends State<TransactionListScreen>
                     ],
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
-                      color: (totalIncome >= totalExpense
-                              ? AppColors.income
-                              : AppColors.expense)
-                          .withOpacity(0.1),
+                      color:
+                          (totalIncome >= totalExpense
+                                  ? AppColors.income
+                                  : AppColors.expense)
+                              .withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -408,7 +414,10 @@ class _TransactionListScreenState extends State<TransactionListScreen>
           const SizedBox(height: 8),
           if (transaction.isPending)
             ListTile(
-              leading: const Icon(Icons.check_circle_rounded, color: AppColors.success),
+              leading: const Icon(
+                Icons.check_circle_rounded,
+                color: AppColors.success,
+              ),
               title: const Text('Marcar como Pago'),
               onTap: () {
                 context.read<TransactionProvider>().markAsPaid(transaction.id);

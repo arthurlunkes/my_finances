@@ -452,7 +452,6 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         await provider.updateTransaction(transaction);
       } else {
         await provider.addTransaction(transaction);
-
       }
 
       if (mounted) {

@@ -39,7 +39,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
         actions: [
           IconButton(
             icon: Icon(
-              _hideValues ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+              _hideValues
+                  ? Icons.visibility_off_outlined
+                  : Icons.visibility_outlined,
             ),
             onPressed: () {
               setState(() {

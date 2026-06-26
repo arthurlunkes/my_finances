@@ -35,9 +35,9 @@ class UpcomingPaymentsList extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               'Nenhum pagamento próximo',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyLarge?.copyWith(color: AppColors.textSecondary),
             ),
           ],
         ),

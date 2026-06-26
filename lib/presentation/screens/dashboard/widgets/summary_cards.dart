@@ -67,10 +67,7 @@ class SummaryCards extends StatelessWidget {
             child: Icon(icon, color: color, size: 20),
           ),
           const SizedBox(height: 12),
-          Text(
-            title,
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
+          Text(title, style: Theme.of(context).textTheme.bodyMedium),
           const SizedBox(height: 4),
           Text(
             hideValues ? '••••' : CurrencyFormatter.format(value),
